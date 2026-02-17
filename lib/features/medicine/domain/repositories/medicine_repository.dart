@@ -1,4 +1,4 @@
-import '../entities/Medicine.dart';
+import '../entities/medicine.dart';
 import '../entities/history.dart';
 
 abstract class MedicineRepository {

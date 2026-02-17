@@ -3,7 +3,7 @@ import 'package:medicine_reminder_app/features/medicine/domain/entities/history.
 import 'package:medicine_reminder_app/features/medicine/domain/entities/medicine_time.dart';
 import 'package:medicine_reminder_app/features/medicine/domain/usecases/get_today_medicine_status.dart';
 
-import 'InMemoryMedicineRepository.dart';
+import '../repositories/InMemoryMedicineRepository.dart';
 
 
 void main() {

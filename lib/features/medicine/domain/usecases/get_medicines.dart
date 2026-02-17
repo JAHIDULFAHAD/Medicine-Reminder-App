@@ -1,4 +1,4 @@
-import '../entities/Medicine.dart';
+import '../entities/medicine.dart';
 import '../repositories/medicine_repository.dart';
 
 class GetMedicines {

@@ -1,4 +1,4 @@
-import 'package:medicine_reminder_app/features/medicine/domain/entities/Medicine.dart';
+import 'package:medicine_reminder_app/features/medicine/domain/entities/medicine.dart';
 import 'package:medicine_reminder_app/features/medicine/domain/entities/history.dart';
 import 'package:medicine_reminder_app/features/medicine/domain/repositories/medicine_repository.dart';
 
