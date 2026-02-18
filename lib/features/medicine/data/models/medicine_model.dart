@@ -16,7 +16,7 @@ class MedicineModel extends Medicine {
   final List<MedicineTime> times;
 
   @HiveField(3)
-  final int days;
+  final List<int> days;
 
   MedicineModel({
     required this.id,

@@ -20,7 +20,7 @@ class MedicineModelAdapter extends TypeAdapter<MedicineModel> {
       id: fields[0] as String,
       name: fields[1] as String,
       times: (fields[2] as List).cast<MedicineTime>(),
-      days: fields[3] as int,
+      days: (fields[3] as List).cast<int>(),
     );
   }
 

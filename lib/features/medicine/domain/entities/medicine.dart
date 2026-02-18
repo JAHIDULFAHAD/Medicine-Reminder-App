@@ -4,7 +4,7 @@ class Medicine {
   final String id;
   final String name;
   final List<MedicineTime> times; // morning, noon, night
-  final int days; // how many days
+  final List<int> days; // how many days
 
   Medicine({
     required this.id,
