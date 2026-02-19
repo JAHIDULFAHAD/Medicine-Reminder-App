@@ -6,11 +6,9 @@ class GetTodayMedicineStatus {
 
   GetTodayMedicineStatus(this.repository);
 
-  Future<Map<String, Map<MedicineTime, bool>>> call() async {
-    final today = DateTime.now();
-    final historyList = await repository.getHistory(date: today);
+  Future<Map<String, Map<MedicineTime, bool>>> call(DateTime date) async {
+    final historyList = await repository.getHistory(date: date);
 
-    // Map: medicineId -> {time -> taken}
     final Map<String, Map<MedicineTime, bool>> result = {};
 
     for (var history in historyList) {

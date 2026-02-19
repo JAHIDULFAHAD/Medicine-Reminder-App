@@ -8,8 +8,11 @@ import 'features/medicine/data/datasources/hive_datasource.dart';
 import 'features/medicine/data/models/history_model.dart';
 import 'features/medicine/data/models/medicine_model.dart';
 import 'features/medicine/data/repositories/medicine_repository_impl.dart';
+import 'features/medicine/domain/entities/medicine_time.dart';
 import 'features/medicine/domain/repositories/medicine_repository.dart';
 import 'features/medicine/domain/usecases/add_medicine.dart';
+import 'features/medicine/domain/usecases/get_medicines.dart';
+import 'features/medicine/domain/usecases/get_medicines_by_time.dart';
 import 'features/medicine/domain/usecases/get_today_medicine_status.dart';
 import 'features/medicine/domain/usecases/save_history.dart';
 import 'features/medicine/presentation/cubit/medicine_cubit.dart';
@@ -24,6 +27,8 @@ Future<void> main() async {
   // Register Adapters
   Hive.registerAdapter(MedicineModelAdapter());
   Hive.registerAdapter(HistoryModelAdapter());
+  Hive.registerAdapter(MedicineTimeAdapter());
+
 
   // Open Boxes
   final medicineBox = await Hive.openBox<MedicineModel>('medicines_box');
@@ -48,17 +53,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return BlocProvider(
+      create: (_) => MedicineCubit(
+        addMedicineUseCase: AddMedicine(repository),
+        saveHistoryUseCase: SaveHistory(repository),
+        getTodayStatusUseCase: GetTodayMedicineStatus(repository),
+        getMedicinesUseCase: GetMedicines(repository),
+        getMedicinesByTime: GetMedicinesByTime(GetMedicines(repository)),
+      ),
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
-
-        home: BlocProvider(
-          create: (_) => MedicineCubit(
-            addMedicineUseCase: AddMedicine(repository),
-            saveHistoryUseCase: SaveHistory(repository),
-            getTodayStatusUseCase: GetTodayMedicineStatus(repository),
-            repository: repository,
-          ),
-          child: TabBarScreen(),
-        ));
+        home: TabBarScreen(),
+      ),
+    );
   }
 }

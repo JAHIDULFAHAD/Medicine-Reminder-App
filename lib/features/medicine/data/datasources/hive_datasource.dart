@@ -13,6 +13,8 @@ class HiveDataSource {
 
   Future<void> addMedicine(MedicineModel medicine) async {
     await medicineBox.put(medicine.id, medicine);
+    print("Saved medicine: ${medicine.name}");
+    print("Total in box: ${medicineBox.length}");
   }
 
   Future<List<MedicineModel>> getMedicines() async {

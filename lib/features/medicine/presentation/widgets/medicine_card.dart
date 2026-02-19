@@ -1,83 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/entities/medicine_time.dart';
-import '../cubit/medicine_cubit.dart';
-import '../cubit/medicine_state.dart';
+
 import '../../domain/entities/history.dart';
 import '../../domain/entities/medicine.dart';
+import '../../domain/entities/medicine_time.dart';
+import 'package:flutter/material.dart';
 
-Map<String, bool> getStatusForTime(
-    List<Medicine> medicines,
-    Map<String, Map<MedicineTime, bool>> todayStatus,
-    MedicineTime time,
-    ) {
-  final status = <String, bool>{};
-  for (var med in medicines) {
-    status[med.id] = todayStatus[med.id]?[time] ?? false;
-  }
-  return status;
-}
-
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<MedicineCubit, MedicineState>(
-      builder: (context, state) {
-        if (state is MedicineLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (state is MedicineLoaded) {
-          final medicines = state.medicines;
-          final todayStatus = state.todayStatus;
-
-          if (medicines.isEmpty) {
-            return const Center(child: Text('No medicines found.'));
-          }
-
-          // Filter by time
-          final morningMeds = medicines.where((m) => m.times.contains(MedicineTime.morning)).toList();
-          final noonMeds = medicines.where((m) => m.times.contains(MedicineTime.noon)).toList();
-          final nightMeds = medicines.where((m) => m.times.contains(MedicineTime.night)).toList();
-
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                if (morningMeds.isNotEmpty)
-                  MedicineCard(
-                      title: "Morning",
-                      medicines: morningMeds,
-                      todayStatus: getStatusForTime(morningMeds, todayStatus, MedicineTime.morning)),
-                if (noonMeds.isNotEmpty)
-                  MedicineCard(
-                      title: "Noon",
-                      medicines: noonMeds,
-                      todayStatus: getStatusForTime(noonMeds, todayStatus, MedicineTime.noon)),
-                if (nightMeds.isNotEmpty)
-                  MedicineCard(
-                      title: "Night",
-                      medicines: nightMeds,
-                      todayStatus: getStatusForTime(nightMeds, todayStatus, MedicineTime.night)),
-              ],
-            ),
-          );
-        }
-
-        return const Center(child: Text("Loading..."));
-      },
-    );
-  }
-}
+import '../cubit/medicine_cubit.dart';
 
 class MedicineCard extends StatefulWidget {
   final String title;
