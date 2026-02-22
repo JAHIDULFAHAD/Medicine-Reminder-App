@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medicine_reminder_app/features/medicine/presentation/pages/history_screen.dart';
 
 import 'add_medicine_screen.dart';
 import 'home_page.dart';
@@ -29,7 +30,7 @@ class TabBarScreen extends StatelessWidget {
         body: const TabBarView(
           children: [
             HomePage(),
-            HomePage(),
+            HistoryScreen(),
           ],
         ),
         floatingActionButton:  FloatingActionButton(
