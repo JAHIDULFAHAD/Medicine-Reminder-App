@@ -4,8 +4,6 @@ import 'package:medicine_reminder_app/features/medicine/presentation/widgets/med
 import '../../domain/entities/medicine_time.dart';
 import '../cubit/medicine_cubit.dart';
 import '../cubit/medicine_state.dart';
-import '../../domain/entities/history.dart';
-import '../../domain/entities/medicine.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

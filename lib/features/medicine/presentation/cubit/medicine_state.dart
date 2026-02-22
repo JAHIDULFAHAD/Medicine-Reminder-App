@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../domain/entities/history.dart';
 import '../../domain/entities/medicine.dart';
 import '../../domain/entities/medicine_time.dart';
 
@@ -14,11 +15,16 @@ class MedicineLoading extends MedicineState {}
 class MedicineLoaded extends MedicineState {
   final List<Medicine> medicines;
   final Map<String, Map<MedicineTime, bool>> todayStatus;
+  final List<History> histories;
 
-  MedicineLoaded({required this.medicines, required this.todayStatus});
+  MedicineLoaded({
+    required this.medicines,
+    required this.todayStatus,
+    required this.histories,
+  });
 
   @override
-  List<Object?> get props => [medicines, todayStatus];
+  List<Object?> get props => [medicines, todayStatus, histories];
 }
 
 class MedicineError extends MedicineState {

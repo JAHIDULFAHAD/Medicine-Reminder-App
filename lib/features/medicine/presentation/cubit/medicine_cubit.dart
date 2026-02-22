@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/medicine_time.dart';
 import '../../domain/usecases/add_medicine.dart';
+import '../../domain/usecases/get_history.dart';
 import '../../domain/usecases/get_medicines_by_time.dart';
 import '../../domain/usecases/get_today_medicine_status.dart';
 import '../../domain/usecases/save_history.dart';
@@ -15,6 +16,7 @@ class MedicineCubit extends Cubit<MedicineState> {
   final GetTodayMedicineStatus getTodayStatusUseCase;
   final GetMedicines getMedicinesUseCase;
   final GetMedicinesByTime getMedicinesByTime;
+  final GetHistory getHistoryUseCase;
 
   MedicineCubit({
     required this.addMedicineUseCase,
@@ -22,6 +24,7 @@ class MedicineCubit extends Cubit<MedicineState> {
     required this.getTodayStatusUseCase,
     required this.getMedicinesUseCase,
     required this.getMedicinesByTime,
+    required this.getHistoryUseCase,
   }) : super(MedicineInitial()) {
     loadTodayData();
   }
@@ -31,31 +34,33 @@ class MedicineCubit extends Cubit<MedicineState> {
     try {
       final medicines = await getMedicinesUseCase();
       final status = await getTodayStatusUseCase(DateTime.now());
+      final histories = await getHistoryUseCase();
 
-      emit(MedicineLoaded(
-        medicines: medicines,
-        todayStatus: status,
-      ));
+      emit(
+        MedicineLoaded(
+          medicines: medicines,
+          todayStatus: status,
+          histories: histories,
+        ),
+      );
     } catch (e) {
       emit(MedicineError(e.toString()));
     }
   }
 
   Future<void> loadTodayData({MedicineTime? time}) async {
-    emit(MedicineLoading());
     try {
-      List<Medicine> medicines;
-      if (time != null) {
-        medicines = await getMedicinesByTime(time);
-      } else {
-        medicines = await getMedicinesUseCase();
-      }
+      final medicines = time != null
+          ? await getMedicinesByTime(time)
+          : await getMedicinesUseCase();
 
       final status = await getTodayStatusUseCase(DateTime.now());
+      final histories = await getHistoryUseCase();
 
       emit(MedicineLoaded(
         medicines: medicines,
         todayStatus: status,
+        histories: histories,
       ));
     } catch (e) {
       emit(MedicineError(e.toString()));

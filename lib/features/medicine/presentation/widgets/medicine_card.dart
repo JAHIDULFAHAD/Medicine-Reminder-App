@@ -56,25 +56,18 @@ class MedicineCard extends StatelessWidget {
             else
               ListView.builder(
                 shrinkWrap: true,
-                itemCount: medicines
-                    .where((m) => m.times.contains(time))
-                    .length,
+                itemCount: filteredMeds.length,
                 itemBuilder: (context, index) {
                   final medicine = filteredMeds[index];
 
                   final bool? taken = todayStatus[medicine.id]?[time];
+                  final bool isLocked = taken != null;
 
-                  String dropdownValue;
-                  if (taken == true) {
-                    dropdownValue = "Taken";
-                  } else if (taken == false) {
-                    dropdownValue = "Missed";
-                  } else {
-                    dropdownValue = "Not Taken";
-                  }
+                  final String dropdownValue =
+                  taken == true ? "Taken" : "Missed";
 
                   return ListTile(
-                    leading: const Icon(Icons.medication),
+                    leading: Icon(isLocked ? Icons.lock : Icons.medication),
                     title: Text(medicine.name),
                     trailing: DropdownButton<String>(
                       value: dropdownValue,
@@ -84,12 +77,11 @@ class MedicineCard extends StatelessWidget {
                           value: "Missed",
                           child: Text("Missed"),
                         ),
-                        DropdownMenuItem(
-                          value: "Not Taken",
-                          child: Text("Not Taken"),
-                        ),
                       ],
-                      onChanged: (value) {
+                      onChanged: isLocked
+                          ? null
+                          : (value) {
+                        if (value == null) return;
                         cubit.saveHistory(
                           History(
                             medicineId: medicine.id,
@@ -99,6 +91,10 @@ class MedicineCard extends StatelessWidget {
                           ),
                         );
                       },
+                      disabledHint: Text(
+                        dropdownValue,
+                        style: const TextStyle(color: Colors.grey),
+                      )
                     ),
                   );
                 },

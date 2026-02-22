@@ -11,6 +11,7 @@ import 'features/medicine/data/repositories/medicine_repository_impl.dart';
 import 'features/medicine/domain/entities/medicine_time.dart';
 import 'features/medicine/domain/repositories/medicine_repository.dart';
 import 'features/medicine/domain/usecases/add_medicine.dart';
+import 'features/medicine/domain/usecases/get_history.dart';
 import 'features/medicine/domain/usecases/get_medicines.dart';
 import 'features/medicine/domain/usecases/get_medicines_by_time.dart';
 import 'features/medicine/domain/usecases/get_today_medicine_status.dart';
@@ -60,6 +61,7 @@ class MyApp extends StatelessWidget {
         getTodayStatusUseCase: GetTodayMedicineStatus(repository),
         getMedicinesUseCase: GetMedicines(repository),
         getMedicinesByTime: GetMedicinesByTime(GetMedicines(repository)),
+        getHistoryUseCase: GetHistory(repository),
       ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
