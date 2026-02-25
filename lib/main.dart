@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:medicine_reminder_app/features/medicine/presentation/pages/home_page.dart';
-
 import 'features/medicine/data/datasources/hive_datasource.dart';
 import 'features/medicine/data/models/history_model.dart';
 import 'features/medicine/data/models/medicine_model.dart';
