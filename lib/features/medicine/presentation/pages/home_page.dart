@@ -14,50 +14,75 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context.read<MedicineCubit>().loadData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MedicineCubit, MedicineState>(
-      builder: (context, state) {
-        if (state is MedicineLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (state is MedicineLoaded) {
-          final medicines = state.medicines;
-          final todayStatus = state.todayStatus;
-
-          if (medicines.isEmpty) {
-            return const Center(child: Text('No medicines found.'));
+    return Scaffold(
+      body: BlocBuilder<MedicineCubit, MedicineState>(
+        builder: (context, state) {
+          if (state is MedicineLoading) {
+            return const Center(child: CircularProgressIndicator());
           }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                MedicineCard(
-                  title: 'Morning',
-                  time: MedicineTime.morning,
-                  medicines: medicines,
-                  todayStatus: todayStatus,
-                ),
-                MedicineCard(
-                  title: 'Noon',
-                  time: MedicineTime.noon,
-                  medicines: medicines,
-                  todayStatus: todayStatus,
-                ),
-                MedicineCard(
-                  title: 'Night',
-                  time: MedicineTime.night,
-                  medicines: medicines,
-                  todayStatus: todayStatus,
-                )
-              ],
-            ),
-          );
-        }
+          if (state is MedicineLoaded) {
+            final medicineCubit = context.read<MedicineCubit>();
+            final selectedDate = medicineCubit.selectedDate;
+            final medicines = state.medicines.where((m) {
+              return medicineCubit.isMedicineActive(m, selectedDate);
+            }).toList();
+            final todayStatus = state.todayStatus;
 
-        return const Center(child: Text("Loading..."));
-      },
+            if (medicines.isEmpty) {
+              return const Center(child: Text('No medicines found.'));
+            }
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  MedicineCard(
+                    title: 'Morning',
+                    time: MedicineTime.morning,
+                    medicines: medicines,
+                    todayStatus: todayStatus,
+                  ),
+                  MedicineCard(
+                    title: 'Noon',
+                    time: MedicineTime.noon,
+                    medicines: medicines,
+                    todayStatus: todayStatus,
+                  ),
+                  MedicineCard(
+                    title: 'Night',
+                    time: MedicineTime.night,
+                    medicines: medicines,
+                    todayStatus: todayStatus,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      final newDate = DateTime(
+                        2025,
+                        2,
+                        27,
+                      ).subtract(Duration(days: 1));
+                      context.read<MedicineCubit>().changeSelectedDate(newDate);
+                    },
+                    child: Text("Go to Test Date"),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return const Center(child: Text("Loading..."));
+        },
+      ),
     );
   }
 }

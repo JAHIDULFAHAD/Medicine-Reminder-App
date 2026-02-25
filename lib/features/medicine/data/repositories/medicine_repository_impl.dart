@@ -15,9 +15,11 @@ class MedicineRepositoryImpl implements MedicineRepository {
     final model = MedicineModel(
       id: medicine.id,
       name: medicine.name,
+      createdAt: medicine.createdAt,
       times: medicine.times,
       days: medicine.days,
     );
+
     await localDataSource.addMedicine(model);
   }
 

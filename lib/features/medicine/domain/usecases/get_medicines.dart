@@ -6,7 +6,11 @@ class GetMedicines {
 
   GetMedicines(this.repository);
 
-  Future<List<Medicine>> call()  {
-    return  repository.getMedicines();
+  Future<List<Medicine>> call() async {
+    try {
+      return await repository.getMedicines();
+    } catch (e) {
+      return [];
+    }
   }
 }

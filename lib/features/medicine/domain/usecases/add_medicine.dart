@@ -7,6 +7,10 @@ class AddMedicine {
   AddMedicine(this.repository);
 
   Future<void> call(Medicine medicine) async {
-    await repository.addMedicine(medicine);
+    try {
+      await repository.addMedicine(medicine);
+    } catch (e) {
+      throw Exception("Failed to add medicine");
+    }
   }
 }

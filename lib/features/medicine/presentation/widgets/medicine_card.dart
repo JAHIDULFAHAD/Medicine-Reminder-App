@@ -63,8 +63,9 @@ class MedicineCard extends StatelessWidget {
                   final bool? taken = todayStatus[medicine.id]?[time];
                   final bool isLocked = taken != null;
 
-                  final String dropdownValue =
-                  taken == true ? "Taken" : "Missed";
+                  final String dropdownValue = taken == true
+                      ? "Taken"
+                      : "Missed";
 
                   return ListTile(
                     leading: Icon(isLocked ? Icons.lock : Icons.medication),
@@ -81,20 +82,33 @@ class MedicineCard extends StatelessWidget {
                       onChanged: isLocked
                           ? null
                           : (value) {
-                        if (value == null) return;
-                        cubit.saveHistory(
-                          History(
-                            medicineId: medicine.id,
-                            date: DateTime.now(),
-                            time: time,
-                            taken: value == "Taken" ? true : false,
-                          ),
-                        );
-                      },
+                              if (value == null) return;
+                              cubit.saveHistory(
+                                History(
+                                  medicineId: medicine.id,
+                                  date: DateTime(
+                                    context
+                                        .read<MedicineCubit>()
+                                        .selectedDate
+                                        .year,
+                                    context
+                                        .read<MedicineCubit>()
+                                        .selectedDate
+                                        .month,
+                                    context
+                                        .read<MedicineCubit>()
+                                        .selectedDate
+                                        .day,
+                                  ),
+                                  time: time,
+                                  taken: value == "Taken" ? true : false,
+                                ),
+                              );
+                            },
                       disabledHint: Text(
                         dropdownValue,
                         style: const TextStyle(color: Colors.grey),
-                      )
+                      ),
                     ),
                   );
                 },

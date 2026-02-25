@@ -93,16 +93,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               color: history.taken ? Colors.green : Colors.red,
                             ),
                             title: Text(medicine!.name),
-                            subtitle: Text(
-                              history.time.name
-                            ),
+                            subtitle: Text(history.time.name),
                             trailing: Text(
                               history.taken ? 'Taken' : 'Missed',
                               style: TextStyle(
-                                color: history.taken ? Colors.green : Colors.red,
+                                color: history.taken
+                                    ? Colors.green
+                                    : Colors.red,
                                 fontWeight: FontWeight.w600,
                               ),
-                            )
+                            ),
                           ),
                         );
                       },
@@ -114,7 +114,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
           }
           return const Center(child: Text("Loading..."));
         },
-
       ),
     );
   }

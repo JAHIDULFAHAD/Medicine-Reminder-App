@@ -19,22 +19,25 @@ class MedicineModelAdapter extends TypeAdapter<MedicineModel> {
     return MedicineModel(
       id: fields[0] as String,
       name: fields[1] as String,
-      times: (fields[2] as List).cast<MedicineTime>(),
-      days: (fields[3] as List).cast<int>(),
+      createdAt: fields[2] as DateTime,
+      times: (fields[3] as List).cast<MedicineTime>(),
+      days: (fields[4] as List).cast<int>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, MedicineModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.times)
+      ..write(obj.createdAt)
       ..writeByte(3)
+      ..write(obj.times)
+      ..writeByte(4)
       ..write(obj.days);
   }
 

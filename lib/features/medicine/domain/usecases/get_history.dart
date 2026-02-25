@@ -7,6 +7,10 @@ class GetHistory {
   GetHistory(this.repository);
 
   Future<List<History>> call({String? medicineId, DateTime? date}) async {
-    return await repository.getHistory(medicineId: medicineId, date: date);
+    try {
+      return await repository.getHistory(medicineId: medicineId, date: date);
+    } catch (e) {
+      return [];
+    }
   }
 }

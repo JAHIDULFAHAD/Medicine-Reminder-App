@@ -7,6 +7,10 @@ class SaveHistory {
   SaveHistory(this.repository);
 
   Future<void> call(History history) async {
-    await repository.saveHistory(history);
+    try {
+      await repository.saveHistory(history);
+    } catch (e) {
+      throw Exception("Failed to save history");
+    }
   }
 }

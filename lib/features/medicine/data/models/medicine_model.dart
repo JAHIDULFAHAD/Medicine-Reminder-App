@@ -13,26 +13,32 @@ class MedicineModel extends Medicine {
   final String name;
 
   @HiveField(2)
-  final List<MedicineTime> times;
+  final DateTime createdAt;
 
   @HiveField(3)
+  final List<MedicineTime> times;
+
+  @HiveField(4)
   final List<int> days;
 
   MedicineModel({
     required this.id,
     required this.name,
+    required this.createdAt,
     required this.times,
     required this.days,
   }) : super(
-    id: id,
-    name: name,
-    times: times,
-    days: days,
-  );
+         id: id,
+         name: name,
+         createdAt: createdAt,
+         times: times,
+         days: days,
+       );
 
   Medicine toEntity() => Medicine(
     id: id,
     name: name,
+    createdAt: createdAt,
     times: times,
     days: days,
   );
