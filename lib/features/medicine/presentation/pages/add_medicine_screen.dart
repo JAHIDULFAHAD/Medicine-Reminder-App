@@ -20,7 +20,12 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
     'Antibiotic',
   ];
   String? selectedMedicine;
-  final List<int> dayOptions = [1, 3, 7, 14, 30];
+  final Map<String, List<int>> medicineDayOptions = {
+    'Paracetamol': [3, 7, 10],
+    'Vitamin C': [7, 30],
+    'Aspirin': [5, 10, 15],
+    'Antibiotic': [7, 14, 21],
+  };
   int? selectedDay;
 
   final Set<MedicineTime> selectedTimes = {};
@@ -58,6 +63,7 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
                 onChanged: (value) {
                   setState(() {
                     selectedMedicine = value;
+                    selectedDay = null;
                   });
                 },
               ),
@@ -69,7 +75,9 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
                 child: DropdownButtonFormField<int>(
                   hint: Text('Select Days'),
                   value: selectedDay,
-                  items: dayOptions.map((day) {
+                  items: (medicineDayOptions[selectedMedicine] ?? []).map((
+                    day,
+                  ) {
                     return DropdownMenuItem(
                       value: day,
                       child: Text('$day Days'),
