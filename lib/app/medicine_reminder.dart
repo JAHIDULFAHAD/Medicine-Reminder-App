@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medicine_reminder_app/app/app_router.dart';
+import 'package:medicine_reminder_app/app/router/app_router.dart';
 import 'package:medicine_reminder_app/features/medicine/domain/repositories/medicine_repository.dart';
 import 'package:medicine_reminder_app/features/medicine/domain/usecases/add_medicine.dart';
 import 'package:medicine_reminder_app/features/medicine/domain/usecases/get_history.dart';
