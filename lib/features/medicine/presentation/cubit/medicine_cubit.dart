@@ -18,6 +18,13 @@ class MedicineCubit extends Cubit<MedicineState> {
   DateTime _selectedDate = DateTime.now();
   DateTime get selectedDate => _selectedDate;
 
+  final Map<String, List<int>> _medicineDayOptions = {
+    'Paracetamol': [7, 14, 21],
+    'Antibiotic': [15, 30],
+    'Vitamin C': [7, 30],
+    'Aspirin': [1, 5, 10],
+  };
+
   MedicineCubit({
     required this.addMedicineUseCase,
     required this.saveHistoryUseCase,
@@ -45,6 +52,7 @@ class MedicineCubit extends Cubit<MedicineState> {
           medicines: medicines,
           todayStatus: status,
           histories: histories,
+          medicineDays: _medicineDayOptions,
         ),
       );
     } catch (e) {
@@ -70,5 +78,9 @@ class MedicineCubit extends Cubit<MedicineState> {
   void changeSelectedDate(DateTime date) {
     _selectedDate = DateTime(date.year, date.month, date.day);
     loadData(date: _selectedDate);
+  }
+
+  List<int> getDaysForMedicine(String medicineName) {
+    return _medicineDayOptions[medicineName] ?? [];
   }
 }

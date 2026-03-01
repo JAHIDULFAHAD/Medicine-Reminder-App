@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,12 +22,7 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
     'Antibiotic',
   ];
   String? selectedMedicine;
-  final Map<String, List<int>> medicineDayOptions = {
-    'Paracetamol': [3, 7, 10],
-    'Vitamin C': [7, 30],
-    'Aspirin': [5, 10, 15],
-    'Antibiotic': [7, 14, 21],
-  };
+
   int? selectedDay;
 
   final Set<MedicineTime> selectedTimes = {};
@@ -72,27 +69,32 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
             if (selectedMedicine != null)
               Padding(
                 padding: EdgeInsets.all(16),
-                child: DropdownButtonFormField<int>(
-                  hint: Text('Select Days'),
-                  value: selectedDay,
-                  items: (medicineDayOptions[selectedMedicine] ?? []).map((
-                    day,
-                  ) {
-                    return DropdownMenuItem(
-                      value: day,
-                      child: Text('$day Days'),
+                child: Builder(
+                  builder: (context) {
+                    final days = context
+                        .read<MedicineCubit>()
+                        .getDaysForMedicine(selectedMedicine!);
+                    return DropdownButtonFormField<int>(
+                      hint: Text('Select Days'),
+                      value: selectedDay,
+                      items: days.map((day) {
+                        return DropdownMenuItem(
+                          value: day,
+                          child: Text('$day Days'),
+                        );
+                      }).toList(),
+                      validator: (value) {
+                        if (value == null) {
+                          return "Please select days";
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        setState(() {
+                          selectedDay = value;
+                        });
+                      },
                     );
-                  }).toList(),
-                  validator: (value) {
-                    if (value == null) {
-                      return "Please select days";
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      selectedDay = value;
-                    });
                   },
                 ),
               ),

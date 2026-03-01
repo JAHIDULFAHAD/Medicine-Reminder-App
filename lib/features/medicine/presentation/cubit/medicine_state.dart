@@ -16,15 +16,17 @@ class MedicineLoaded extends MedicineState {
   final List<Medicine> medicines;
   final Map<String, Map<MedicineTime, bool>> todayStatus;
   final List<History> histories;
+  final Map<String, List<int>> medicineDays;
 
   MedicineLoaded({
     required this.medicines,
     required this.todayStatus,
     required this.histories,
+    required this.medicineDays,
   });
 
   @override
-  List<Object?> get props => [medicines, todayStatus, histories];
+  List<Object?> get props => [medicines, todayStatus, histories, medicineDays];
 }
 
 class MedicineError extends MedicineState {
