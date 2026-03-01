@@ -39,6 +39,7 @@ dependencies:
   path_provider: ^2.0.16
   equatable: ^2.0.8
   flutter_bloc: ^9.1.1
+  go_router: ^17.0.0
 
 dev_dependencies:
   flutter_test:

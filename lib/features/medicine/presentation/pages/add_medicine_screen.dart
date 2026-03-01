@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../domain/entities/medicine.dart';
 import '../../domain/entities/medicine_time.dart';
@@ -214,6 +215,6 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
       context,
     ).showSnackBar(SnackBar(content: Text('Medicine added successfully')));
 
-    Navigator.pop(context);
+    context.pop();
   }
 }

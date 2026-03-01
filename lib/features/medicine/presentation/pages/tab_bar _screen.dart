@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:medicine_reminder_app/features/medicine/presentation/pages/history_screen.dart';
 
 import 'add_medicine_screen.dart';
@@ -24,21 +25,13 @@ class TabBarScreen extends StatelessWidget {
             tabs: [
               Tab(text: 'Home'),
               Tab(text: 'History'),
-            ]
-          )
+            ],
+          ),
         ),
-        body: const TabBarView(
-          children: [
-            HomePage(),
-            HistoryScreen(),
-          ],
-        ),
-        floatingActionButton:  FloatingActionButton(
+        body: const TabBarView(children: [HomePage(), HistoryScreen()]),
+        floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AddMedicineScreen()),
-            );
+            context.push('/add_medicine');
           },
           child: const Icon(Icons.add),
         ),
