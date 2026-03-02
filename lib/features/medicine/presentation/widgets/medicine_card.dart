@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medicine_reminder_app/core/services/notification_service.dart';
 
 import '../../domain/entities/history.dart';
 import '../../domain/entities/medicine.dart';
@@ -83,6 +84,10 @@ class MedicineCard extends StatelessWidget {
                           ? null
                           : (value) {
                               if (value == null) return;
+                              NotificationService().showNotification(
+                                title: medicine.name,
+                                body: value,
+                              );
                               cubit.saveHistory(
                                 History(
                                   medicineId: medicine.id,

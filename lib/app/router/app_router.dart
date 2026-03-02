@@ -5,17 +5,19 @@ import 'package:medicine_reminder_app/features/medicine/presentation/pages/add_m
 import 'package:medicine_reminder_app/features/medicine/presentation/pages/tab_bar%20_screen.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  debugLogDiagnostics: true,
+  initialLocation: RoutePaths.home,
   routes: [
     GoRoute(
       name: RouteNames.home,
       path: RoutePaths.home,
-      builder: (context, State) => TabBarScreen(),
+      builder: (context, state) => const TabBarScreen(),
     ),
+
     GoRoute(
       name: RouteNames.medicineAdd,
       path: RoutePaths.medicineAdd,
-      builder: (context, State) => AddMedicineScreen(),
+      builder: (context, state) => const AddMedicineScreen(),
     ),
   ],
 );
