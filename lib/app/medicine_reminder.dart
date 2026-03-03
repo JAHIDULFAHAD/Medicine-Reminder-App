@@ -9,6 +9,8 @@ import 'package:medicine_reminder_app/features/medicine/domain/usecases/get_toda
 import 'package:medicine_reminder_app/features/medicine/domain/usecases/save_history.dart';
 import 'package:medicine_reminder_app/features/medicine/presentation/cubit/medicine_cubit.dart';
 
+import '../core/services/notification_service.dart';
+
 class MedicineReminder extends StatelessWidget {
   const MedicineReminder({super.key, required this.repository});
 
@@ -23,6 +25,7 @@ class MedicineReminder extends StatelessWidget {
         getTodayStatusUseCase: GetTodayMedicineStatus(repository),
         getMedicinesUseCase: GetMedicines(repository),
         getHistoryUseCase: GetHistory(repository),
+        notificationService: NotificationService(),
       ),
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,

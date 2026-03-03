@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/services/notification_service.dart';
+import '../../domain/entities/medicine_time.dart';
 import '../../domain/usecases/add_medicine.dart';
 import '../../domain/usecases/get_history.dart';
 import '../../domain/usecases/get_today_medicine_status.dart';
@@ -14,6 +16,7 @@ class MedicineCubit extends Cubit<MedicineState> {
   final GetTodayMedicineStatus getTodayStatusUseCase;
   final GetMedicines getMedicinesUseCase;
   final GetHistory getHistoryUseCase;
+  final NotificationService notificationService;
 
   DateTime _selectedDate = DateTime.now();
   DateTime get selectedDate => _selectedDate;
@@ -31,6 +34,7 @@ class MedicineCubit extends Cubit<MedicineState> {
     required this.getTodayStatusUseCase,
     required this.getMedicinesUseCase,
     required this.getHistoryUseCase,
+    required this.notificationService,
   }) : super(MedicineInitial());
 
   Future<void> loadData({DateTime? date}) async {
@@ -62,6 +66,7 @@ class MedicineCubit extends Cubit<MedicineState> {
 
   Future<void> addMedicine(Medicine medicine) async {
     await addMedicineUseCase(medicine);
+    await refreshNotifications();
     await loadData();
   }
 
@@ -75,6 +80,65 @@ class MedicineCubit extends Cubit<MedicineState> {
     return medicine.days.contains(diff);
   }
 
+  Future<void> refreshNotifications() async {
+    final medicines = await getMedicinesUseCase();
+
+    final Map<MedicineTime, List<String>> grouped = {};
+
+
+    /// Group medicine by time
+    for (final medicine in medicines) {
+      for (final time in medicine.times) {
+        grouped.putIfAbsent(time, () => []);
+        grouped[time]!.add(medicine.name);
+      }
+    }
+
+    /// Schedule notification
+    for (final entry in grouped.entries) {
+      final time = entry.key;
+      final names = entry.value.join(', ');
+
+      final id = _getNotificationId(time);
+
+      if (names.isEmpty) {
+        await notificationService.cancelNotification(id);
+        continue;
+      }
+
+      await notificationService.scheduleDailyNotification(
+        id: id,
+        title: "Medicine Reminder 💊",
+        body: "Take: $names",
+        hour: _getHour(time),
+        minute: 0,
+      );
+    }
+  }
+
+  int _getNotificationId(MedicineTime time) {
+    switch (time) {
+      case MedicineTime.morning:
+        return 1;
+      case MedicineTime.noon:
+        return 2;
+      case MedicineTime.night:
+        return 3;
+    }
+    return 0;
+  }
+  int _getHour(MedicineTime time) {
+    switch (time) {
+      case MedicineTime.morning:
+        return 9;
+
+      case MedicineTime.noon:
+        return 16;
+
+      case MedicineTime.night:
+        return 22;
+    }
+  }
   void changeSelectedDate(DateTime date) {
     _selectedDate = DateTime(date.year, date.month, date.day);
     loadData(date: _selectedDate);
@@ -83,4 +147,5 @@ class MedicineCubit extends Cubit<MedicineState> {
   List<int> getDaysForMedicine(String medicineName) {
     return _medicineDayOptions[medicineName] ?? [];
   }
+
 }
