@@ -2,6 +2,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'dart:typed_data';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -103,7 +104,7 @@ class NotificationService {
   }
 
   NotificationDetails _notificationDetails() {
-    const AndroidNotificationDetails androidDetails =
+    final AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
           'medicine_channel',
           'Medicine Reminder',
@@ -111,6 +112,21 @@ class NotificationService {
           importance: Importance.max,
           priority: Priority.high,
           showWhen: true,
+          playSound: true,
+          enableVibration: true,
+          enableLights: true,
+          vibrationPattern: Int64List.fromList(const [
+            0,
+            800,
+            300,
+            800,
+            300,
+            800,
+            300,
+            800,
+            300,
+            800,
+          ]),
         );
 
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
@@ -119,7 +135,7 @@ class NotificationService {
       presentSound: true,
     );
 
-    return const NotificationDetails(android: androidDetails, iOS: iosDetails);
+    return NotificationDetails(android: androidDetails, iOS: iosDetails);
   }
 
   Future<void> scheduleTestNotification() async {
@@ -134,7 +150,7 @@ class NotificationService {
       body: 'This is a test notification',
       scheduledDate: scheduled,
       notificationDetails: _notificationDetails(),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: null,
     );
   }

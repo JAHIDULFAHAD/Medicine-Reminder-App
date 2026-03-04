@@ -114,7 +114,7 @@ class MedicineCubit extends Cubit<MedicineState> {
             title: "Medicine Reminder 💊",
             body: "Take: $names",
             hour: _getHour(time),
-            minute: 50,
+            minute: 10,
           ),
         );
       }
@@ -138,7 +138,7 @@ class MedicineCubit extends Cubit<MedicineState> {
   int _getHour(MedicineTime time) {
     return switch (time) {
       MedicineTime.morning => 10,
-      MedicineTime.noon => 14,
+      MedicineTime.noon => 16,
       MedicineTime.night => 22,
     };
   }

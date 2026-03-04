@@ -30,9 +30,7 @@ class TabBarScreen extends StatelessWidget {
         body: const TabBarView(children: [HomePage(), HistoryScreen()]),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Future.microtask(() {
-              context.push(RoutePaths.medicineAdd);
-            });
+            context.push(RoutePaths.medicineAdd);
           },
           child: const Icon(Icons.add),
         ),
