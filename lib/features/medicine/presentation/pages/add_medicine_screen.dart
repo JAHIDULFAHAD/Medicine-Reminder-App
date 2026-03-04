@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:medicine_reminder_app/app/router/route_paths.dart';
 import '../../domain/entities/medicine.dart';
 import '../../domain/entities/medicine_time.dart';
 import '../cubit/medicine_cubit.dart';
@@ -50,7 +51,12 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
       times: selectedTimes.toList(),
     );
 
-    await cubit.addMedicine(medicine);
+    try {
+      await cubit.addMedicine(medicine);
+    } catch (e) {
+      print("Error adding medicine: $e");
+      // Optional: show error snackbar
+    }
 
     if (!mounted) return;
 
@@ -58,7 +64,10 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
       const SnackBar(content: Text('Medicine added successfully')),
     );
 
-    context.pop();
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    if (!mounted) return;
+    context.go(RoutePaths.home);
   }
 
   @override

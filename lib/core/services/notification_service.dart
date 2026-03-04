@@ -88,7 +88,7 @@ class NotificationService {
       body: body,
       scheduledDate: scheduledDate,
       notificationDetails: _notificationDetails(),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time, // daily repeat
     );
   }
@@ -150,7 +150,7 @@ class NotificationService {
       body: 'This is a test notification',
       scheduledDate: scheduled,
       notificationDetails: _notificationDetails(),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: null,
     );
   }
