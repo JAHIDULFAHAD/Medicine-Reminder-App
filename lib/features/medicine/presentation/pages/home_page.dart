@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medicine_reminder_app/core/services/notification_service.dart';
 import 'package:medicine_reminder_app/features/medicine/presentation/widgets/medicine_card.dart';
+import 'package:timezone/timezone.dart' as tz;
 import '../../domain/entities/medicine_time.dart';
 import '../cubit/medicine_cubit.dart';
 import '../cubit/medicine_state.dart';
@@ -18,11 +20,13 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     Future.microtask(() {
       context.read<MedicineCubit>().loadData();
+      context.read<MedicineCubit>().refreshNotifications();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final notificationService = NotificationService();
     return Scaffold(
       body: BlocBuilder<MedicineCubit, MedicineState>(
         builder: (context, state) {
@@ -73,7 +77,14 @@ class _HomePageState extends State<HomePage> {
                       ).subtract(Duration(days: 1));
                       context.read<MedicineCubit>().changeSelectedDate(newDate);
                     },
+
                     child: Text("Go to Test Date"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await notificationService.scheduleTestNotification();
+                    },
+                    child: const Text("Test Schedule"),
                   ),
                 ],
               ),

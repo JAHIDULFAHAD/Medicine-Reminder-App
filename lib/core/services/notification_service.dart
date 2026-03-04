@@ -1,6 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -8,7 +9,18 @@ class NotificationService {
   // Initialize notifications
   Future<void> initialize() async {
     tz.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('Asia/Dhaka'));
+    final timezone = await FlutterTimezone.getLocalTimezone();
+
+    try {
+      tz.setLocalLocation(
+        tz.getLocation(
+          timezone.toString().replaceAll(RegExp(r'.*?\('), '').split(',')[0],
+        ),
+      );
+    } catch (_) {
+      tz.setLocalLocation(tz.getLocation('Asia/Dhaka'));
+    }
+
     // Android initialization settings
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -57,7 +69,7 @@ class NotificationService {
   }) async {
     final now = tz.TZDateTime.now(tz.local);
 
-    tz.TZDateTime scheduledDate = tz.TZDateTime(
+    var scheduledDate = tz.TZDateTime(
       tz.local,
       now.year,
       now.month,
@@ -78,6 +90,10 @@ class NotificationService {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time, // daily repeat
     );
+    final pending = await _notificationsPlugin.pendingNotificationRequests();
+
+    print("Pending notifications: $pending");
+    print("Notification scheduled for $scheduledDate");
   }
 
   // Cancel a specific notification
@@ -108,5 +124,32 @@ class NotificationService {
     );
 
     return const NotificationDetails(android: androidDetails, iOS: iosDetails);
+  }
+
+  Future<void> scheduleTestNotification() async {
+    await cancelAllNotifications();
+
+    print("INSIDE scheduleTestNotification");
+
+    final now = tz.TZDateTime.now(tz.local);
+    final scheduled = now.add(const Duration(minutes: 1));
+
+    print("Scheduled time: $scheduled");
+
+    await _notificationsPlugin.zonedSchedule(
+      id: 222,
+      title: 'Test Notification',
+      body: 'This is a test notification',
+      scheduledDate: scheduled,
+      notificationDetails: _notificationDetails(),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: null,
+    );
+
+    print("SCHEDULE DONE");
+
+    final pending = await _notificationsPlugin.pendingNotificationRequests();
+
+    print("Pending notifications: $pending");
   }
 }

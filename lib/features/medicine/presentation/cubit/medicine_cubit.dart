@@ -19,6 +19,7 @@ class MedicineCubit extends Cubit<MedicineState> {
   final NotificationService notificationService;
 
   DateTime _selectedDate = DateTime.now();
+
   DateTime get selectedDate => _selectedDate;
 
   final Map<String, List<int>> _medicineDayOptions = {
@@ -66,8 +67,8 @@ class MedicineCubit extends Cubit<MedicineState> {
 
   Future<void> addMedicine(Medicine medicine) async {
     await addMedicineUseCase(medicine);
-    await refreshNotifications();
     await loadData();
+    await refreshNotifications();
   }
 
   Future<void> saveHistory(History history) async {
@@ -85,8 +86,7 @@ class MedicineCubit extends Cubit<MedicineState> {
 
     final Map<MedicineTime, List<String>> grouped = {};
 
-
-    /// Group medicine by time
+    // Group medicines by time
     for (final medicine in medicines) {
       for (final time in medicine.times) {
         grouped.putIfAbsent(time, () => []);
@@ -94,7 +94,7 @@ class MedicineCubit extends Cubit<MedicineState> {
       }
     }
 
-    /// Schedule notification
+    // Schedule notification
     for (final entry in grouped.entries) {
       final time = entry.key;
       final names = entry.value.join(', ');
@@ -117,28 +117,21 @@ class MedicineCubit extends Cubit<MedicineState> {
   }
 
   int _getNotificationId(MedicineTime time) {
-    switch (time) {
-      case MedicineTime.morning:
-        return 1;
-      case MedicineTime.noon:
-        return 2;
-      case MedicineTime.night:
-        return 3;
-    }
-    return 0;
+    return switch (time) {
+      MedicineTime.morning => 1,
+      MedicineTime.noon => 2,
+      MedicineTime.night => 3,
+    };
   }
+
   int _getHour(MedicineTime time) {
-    switch (time) {
-      case MedicineTime.morning:
-        return 9;
-
-      case MedicineTime.noon:
-        return 16;
-
-      case MedicineTime.night:
-        return 22;
-    }
+    return switch (time) {
+      MedicineTime.morning => 12,
+      MedicineTime.noon => 16,
+      MedicineTime.night => 22,
+    };
   }
+
   void changeSelectedDate(DateTime date) {
     _selectedDate = DateTime(date.year, date.month, date.day);
     loadData(date: _selectedDate);
@@ -147,5 +140,4 @@ class MedicineCubit extends Cubit<MedicineState> {
   List<int> getDaysForMedicine(String medicineName) {
     return _medicineDayOptions[medicineName] ?? [];
   }
-
 }
