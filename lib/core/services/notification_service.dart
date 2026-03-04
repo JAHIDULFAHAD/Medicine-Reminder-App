@@ -90,10 +90,6 @@ class NotificationService {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time, // daily repeat
     );
-    final pending = await _notificationsPlugin.pendingNotificationRequests();
-
-    print("Pending notifications: $pending");
-    print("Notification scheduled for $scheduledDate");
   }
 
   // Cancel a specific notification
@@ -129,12 +125,8 @@ class NotificationService {
   Future<void> scheduleTestNotification() async {
     await cancelAllNotifications();
 
-    print("INSIDE scheduleTestNotification");
-
     final now = tz.TZDateTime.now(tz.local);
     final scheduled = now.add(const Duration(minutes: 1));
-
-    print("Scheduled time: $scheduled");
 
     await _notificationsPlugin.zonedSchedule(
       id: 222,
@@ -145,11 +137,5 @@ class NotificationService {
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: null,
     );
-
-    print("SCHEDULE DONE");
-
-    final pending = await _notificationsPlugin.pendingNotificationRequests();
-
-    print("Pending notifications: $pending");
   }
 }

@@ -1,9 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../domain/entities/medicine.dart';
 import '../../domain/entities/medicine_time.dart';
 import '../cubit/medicine_cubit.dart';
@@ -22,8 +19,8 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
     'Aspirin',
     'Antibiotic',
   ];
-  String? selectedMedicine;
 
+  String? selectedMedicine;
   int? selectedDay;
 
   final Set<MedicineTime> selectedTimes = {};
@@ -31,6 +28,38 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
   final _formKey = GlobalKey<FormState>();
 
   bool showTimeError = false;
+
+  Future<void> saveMedicine() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (selectedTimes.isEmpty) {
+      setState(() => showTimeError = true);
+      return;
+    }
+
+    final cubit = context.read<MedicineCubit>();
+    final date = cubit.selectedDate;
+
+    if (selectedDay == null) return;
+
+    final medicine = Medicine(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: selectedMedicine!,
+      createdAt: DateTime(date.year, date.month, date.day),
+      days: List.generate(selectedDay!, (index) => index + 1),
+      times: selectedTimes.toList(),
+    );
+
+    await cubit.addMedicine(medicine);
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Medicine added successfully')),
+    );
+
+    context.pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,22 +71,18 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
       ),
       body: Form(
         key: _formKey,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: DropdownButtonFormField<String>(
-                hint: Text('Select Medicine'),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              DropdownButtonFormField<String>(
+                hint: const Text('Select Medicine'),
                 value: selectedMedicine,
                 items: medicineList.map((med) {
                   return DropdownMenuItem(value: med, child: Text(med));
                 }).toList(),
-                validator: (value) {
-                  if (value == null) {
-                    return "Please select a medicine";
-                  }
-                  return null;
-                },
+                validator: (value) =>
+                    value == null ? "Please select a medicine" : null,
                 onChanged: (value) {
                   setState(() {
                     selectedMedicine = value;
@@ -65,18 +90,18 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
                   });
                 },
               ),
-            ),
 
-            if (selectedMedicine != null)
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: Builder(
+              const SizedBox(height: 16),
+
+              if (selectedMedicine != null)
+                Builder(
                   builder: (context) {
                     final days = context
                         .read<MedicineCubit>()
                         .getDaysForMedicine(selectedMedicine!);
+
                     return DropdownButtonFormField<int>(
-                      hint: Text('Select Days'),
+                      hint: const Text('Select Days'),
                       value: selectedDay,
                       items: days.map((day) {
                         return DropdownMenuItem(
@@ -84,29 +109,22 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
                           child: Text('$day Days'),
                         );
                       }).toList(),
-                      validator: (value) {
-                        if (value == null) {
-                          return "Please select days";
-                        }
-                        return null;
-                      },
+                      validator: (value) =>
+                          value == null ? "Please select days" : null,
                       onChanged: (value) {
-                        setState(() {
-                          selectedDay = value;
-                        });
+                        setState(() => selectedDay = value);
                       },
                     );
                   },
                 ),
-              ),
 
-            if (selectedDay != null)
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
+              const SizedBox(height: 16),
+
+              if (selectedDay != null)
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Select Times',
                       style: TextStyle(
                         fontSize: 16,
@@ -115,106 +133,72 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
                     ),
 
                     CheckboxListTile(
-                      title: Text('Morning'),
+                      title: const Text('Morning'),
                       value: selectedTimes.contains(MedicineTime.morning),
                       onChanged: (val) {
                         setState(() {
-                          if (val == true) {
-                            selectedTimes.add(MedicineTime.morning);
-                          } else {
-                            selectedTimes.remove(MedicineTime.morning);
-                          }
-                        });
-                      },
-                    ),
-
-                    CheckboxListTile(
-                      title: Text('Afternoon'),
-                      value: selectedTimes.contains(MedicineTime.noon),
-                      onChanged: (val) {
-                        setState(() {
-                          if (val == true) {
-                            selectedTimes.add(MedicineTime.noon);
-                          } else {
-                            selectedTimes.remove(MedicineTime.noon);
-                          }
-                        });
-                      },
-                    ),
-
-                    CheckboxListTile(
-                      title: Text('Night'),
-                      value: selectedTimes.contains(MedicineTime.night),
-                      onChanged: (val) {
-                        setState(() {
-                          if (val == true) {
-                            selectedTimes.add(MedicineTime.night);
-                          } else {
-                            selectedTimes.remove(MedicineTime.night);
-                          }
+                          val == true
+                              ? selectedTimes.add(MedicineTime.morning)
+                              : selectedTimes.remove(MedicineTime.morning);
                           showTimeError = false;
                         });
                       },
                     ),
+
+                    CheckboxListTile(
+                      title: const Text('Afternoon'),
+                      value: selectedTimes.contains(MedicineTime.noon),
+                      onChanged: (val) {
+                        setState(() {
+                          val == true
+                              ? selectedTimes.add(MedicineTime.noon)
+                              : selectedTimes.remove(MedicineTime.noon);
+                        });
+                      },
+                    ),
+
+                    CheckboxListTile(
+                      title: const Text('Night'),
+                      value: selectedTimes.contains(MedicineTime.night),
+                      onChanged: (val) {
+                        setState(() {
+                          val == true
+                              ? selectedTimes.add(MedicineTime.night)
+                              : selectedTimes.remove(MedicineTime.night);
+
+                          showTimeError = false;
+                        });
+                      },
+                    ),
+
                     if (showTimeError)
-                      Padding(
-                        padding: EdgeInsetsGeometry.only(left: 12),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 12),
                         child: Text(
-                          "Please select at least on time",
+                          "Please select at least one time",
                           style: TextStyle(color: Colors.red),
                         ),
                       ),
                   ],
                 ),
-              ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
+
+              const SizedBox(height: 20),
+
+              SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: FilledButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.teal),
                   ),
-                  onPressed: () {
-                    saveMedicine();
-                  },
-                  child: Text('Save', style: TextStyle(fontSize: 16)),
+                  onPressed: saveMedicine,
+                  child: const Text('Save', style: TextStyle(fontSize: 16)),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
-  }
-
-  Future<void> saveMedicine() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-    if (selectedTimes.isEmpty) {
-      setState(() {
-        showTimeError = true;
-      });
-      return;
-    }
-    final date = context.read<MedicineCubit>().selectedDate;
-    final medicine = Medicine(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: selectedMedicine!,
-      createdAt: DateTime(date.year, date.month, date.day),
-      days: List.generate(selectedDay!, (index) => index + 1),
-      times: selectedTimes.toList(),
-    );
-
-    context.read<MedicineCubit>().addMedicine(medicine);
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Medicine added successfully')));
-
-    context.pop();
   }
 }

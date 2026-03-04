@@ -47,9 +47,7 @@ class MedicineCubit extends Cubit<MedicineState> {
 
     try {
       final medicines = await getMedicinesUseCase();
-
       final status = await getTodayStatusUseCase(_selectedDate);
-
       final histories = await getHistoryUseCase();
 
       emit(
@@ -67,8 +65,7 @@ class MedicineCubit extends Cubit<MedicineState> {
 
   Future<void> addMedicine(Medicine medicine) async {
     await addMedicineUseCase(medicine);
-    await loadData();
-    await refreshNotifications();
+    await refreshAll();
   }
 
   Future<void> saveHistory(History history) async {
@@ -81,12 +78,18 @@ class MedicineCubit extends Cubit<MedicineState> {
     return medicine.days.contains(diff);
   }
 
+  List<Medicine> getActiveMedicines(DateTime date, List<Medicine> medicines) {
+    return medicines.where((m) {
+      final diff = date.difference(m.createdAt).inDays + 1;
+      return m.days.contains(diff);
+    }).toList();
+  }
+
   Future<void> refreshNotifications() async {
     final medicines = await getMedicinesUseCase();
 
     final Map<MedicineTime, List<String>> grouped = {};
 
-    // Group medicines by time
     for (final medicine in medicines) {
       for (final time in medicine.times) {
         grouped.putIfAbsent(time, () => []);
@@ -94,7 +97,8 @@ class MedicineCubit extends Cubit<MedicineState> {
       }
     }
 
-    // Schedule notification
+    final futures = <Future>[];
+
     for (final entry in grouped.entries) {
       final time = entry.key;
       final names = entry.value.join(', ');
@@ -102,18 +106,25 @@ class MedicineCubit extends Cubit<MedicineState> {
       final id = _getNotificationId(time);
 
       if (names.isEmpty) {
-        await notificationService.cancelNotification(id);
-        continue;
+        futures.add(notificationService.cancelNotification(id));
+      } else {
+        futures.add(
+          notificationService.scheduleDailyNotification(
+            id: id,
+            title: "Medicine Reminder 💊",
+            body: "Take: $names",
+            hour: _getHour(time),
+            minute: 50,
+          ),
+        );
       }
-
-      await notificationService.scheduleDailyNotification(
-        id: id,
-        title: "Medicine Reminder 💊",
-        body: "Take: $names",
-        hour: _getHour(time),
-        minute: 0,
-      );
     }
+
+    await Future.wait(futures);
+  }
+
+  Future<void> refreshAll() async {
+    await Future.wait([loadData(), refreshNotifications()]);
   }
 
   int _getNotificationId(MedicineTime time) {
@@ -126,8 +137,8 @@ class MedicineCubit extends Cubit<MedicineState> {
 
   int _getHour(MedicineTime time) {
     return switch (time) {
-      MedicineTime.morning => 12,
-      MedicineTime.noon => 16,
+      MedicineTime.morning => 10,
+      MedicineTime.noon => 14,
       MedicineTime.night => 22,
     };
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medicine_reminder_app/core/services/notification_service.dart';
-
 import '../../domain/entities/history.dart';
 import '../../domain/entities/medicine.dart';
 import '../../domain/entities/medicine_time.dart';
@@ -24,6 +23,9 @@ class MedicineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<MedicineCubit>();
+    final selectedDate = cubit.selectedDate;
+    final notificationService = cubit.notificationService;
+
     final filteredMeds = medicines
         .where((m) => m.times.contains(time))
         .toList();
@@ -45,9 +47,9 @@ class MedicineCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             if (filteredMeds.isEmpty)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Center(
                   child: Text(
                     "No medicine",
                     style: TextStyle(color: Colors.grey),
@@ -57,16 +59,16 @@ class MedicineCard extends StatelessWidget {
             else
               ListView.builder(
                 shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: filteredMeds.length,
                 itemBuilder: (context, index) {
                   final medicine = filteredMeds[index];
 
-                  final bool? taken = todayStatus[medicine.id]?[time];
-                  final bool isLocked = taken != null;
+                  final taken = todayStatus[medicine.id]?[time];
 
-                  final String dropdownValue = taken == true
-                      ? "Taken"
-                      : "Missed";
+                  final isLocked = taken != null;
+
+                  final dropdownValue = taken == true ? "Taken" : "Missed";
 
                   return ListTile(
                     leading: Icon(isLocked ? Icons.lock : Icons.medication),
@@ -84,31 +86,26 @@ class MedicineCard extends StatelessWidget {
                           ? null
                           : (value) {
                               if (value == null) return;
-                              NotificationService().showNotification(
-                                title: medicine.name,
-                                body: value,
-                              );
-                              cubit.saveHistory(
-                                History(
-                                  medicineId: medicine.id,
-                                  date: DateTime(
-                                    context
-                                        .read<MedicineCubit>()
-                                        .selectedDate
-                                        .year,
-                                    context
-                                        .read<MedicineCubit>()
-                                        .selectedDate
-                                        .month,
-                                    context
-                                        .read<MedicineCubit>()
-                                        .selectedDate
-                                        .day,
+
+                              Future.microtask(() {
+                                notificationService.showNotification(
+                                  title: medicine.name,
+                                  body: value,
+                                );
+
+                                cubit.saveHistory(
+                                  History(
+                                    medicineId: medicine.id,
+                                    date: DateTime(
+                                      selectedDate.year,
+                                      selectedDate.month,
+                                      selectedDate.day,
+                                    ),
+                                    time: time,
+                                    taken: value == "Taken",
                                   ),
-                                  time: time,
-                                  taken: value == "Taken" ? true : false,
-                                ),
-                              );
+                                );
+                              });
                             },
                       disabledHint: Text(
                         dropdownValue,
