@@ -1,3 +1,4 @@
+import 'package:injectable/injectable.dart';
 import '../../domain/entities/medicine.dart';
 import '../../domain/entities/history.dart';
 import '../../domain/repositories/medicine_repository.dart';
@@ -5,6 +6,7 @@ import '../datasources/hive_datasource.dart';
 import '../models/medicine_model.dart';
 import '../models/history_model.dart';
 
+@Injectable(as: MedicineRepository)
 class MedicineRepositoryImpl implements MedicineRepository {
   final HiveDataSource localDataSource;
 

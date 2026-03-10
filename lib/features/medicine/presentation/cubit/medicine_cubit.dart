@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import '../../domain/usecases/add_medicine.dart';
 import '../../domain/usecases/get_history.dart';
 import '../../domain/usecases/get_today_medicine_status.dart';
@@ -8,6 +9,7 @@ import '../../domain/entities/medicine.dart';
 import '../../domain/entities/history.dart';
 import 'medicine_state.dart';
 
+@injectable
 class MedicineCubit extends Cubit<MedicineState> {
   final AddMedicine addMedicineUseCase;
   final SaveHistory saveHistoryUseCase;

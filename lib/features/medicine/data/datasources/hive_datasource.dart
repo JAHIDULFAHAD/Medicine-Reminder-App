@@ -1,7 +1,9 @@
 import 'package:hive/hive.dart';
+import 'package:injectable/injectable.dart';
 import '../models/medicine_model.dart';
 import '../models/history_model.dart';
 
+@injectable
 class HiveDataSource {
   final Box<MedicineModel> medicineBox;
   final Box<HistoryModel> historyBox;

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:medicine_reminder_app/app/medicine_reminder.dart';
+import 'package:medicine_reminder_app/core/di/injection_container.dart';
 import 'core/services/notification_service.dart';
-import 'features/medicine/data/datasources/hive_datasource.dart';
 import 'features/medicine/data/models/history_model.dart';
 import 'features/medicine/data/models/medicine_model.dart';
-import 'features/medicine/data/repositories/medicine_repository_impl.dart';
 import 'features/medicine/domain/entities/medicine_time.dart';
 
 Future<void> main() async {
@@ -14,7 +13,7 @@ Future<void> main() async {
   // Initialize notification service
   await NotificationService().initialize();
 
-  //Initialize Hive
+  // Initialize Hive
   await Hive.initFlutter();
 
   // Register Adapters
@@ -26,14 +25,12 @@ Future<void> main() async {
   final medicineBox = await Hive.openBox<MedicineModel>('medicines_box');
   final historyBox = await Hive.openBox<HistoryModel>('history_box');
 
-  // Create HiveDataSource
-  final hiveDataSource = HiveDataSource(
-    medicineBox: medicineBox,
-    historyBox: historyBox,
-  );
+  // Register Hive boxes as singletons in DI container
+  getIt.registerSingleton<Box<MedicineModel>>(medicineBox);
+  getIt.registerSingleton<Box<HistoryModel>>(historyBox);
 
-  // Repository implementation
-  final repository = MedicineRepositoryImpl(hiveDataSource);
+  // Configure Dependency Injection
+  configureDependencies();
 
-  runApp(MedicineReminder(repository: repository));
+  runApp(const MedicineReminder());
 }

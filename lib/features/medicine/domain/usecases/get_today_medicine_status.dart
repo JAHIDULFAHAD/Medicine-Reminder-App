@@ -1,6 +1,8 @@
+import 'package:injectable/injectable.dart';
 import '../entities/medicine_time.dart';
 import '../repositories/medicine_repository.dart';
 
+@injectable
 class GetTodayMedicineStatus {
   final MedicineRepository repository;
 
