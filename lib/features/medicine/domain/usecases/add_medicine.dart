@@ -1,6 +1,9 @@
+import 'package:injectable/injectable.dart';
+
 import '../entities/medicine.dart';
 import '../repositories/medicine_repository.dart';
 
+@injectable
 class AddMedicine {
   final MedicineRepository repository;
 

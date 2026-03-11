@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../domain/entities/medicine_time.dart';
 import '../../domain/usecases/add_medicine.dart';
@@ -10,6 +11,7 @@ import '../../domain/entities/medicine.dart';
 import '../../domain/entities/history.dart';
 import 'medicine_state.dart';
 
+@injectable
 class MedicineCubit extends Cubit<MedicineState> {
   final AddMedicine addMedicineUseCase;
   final SaveHistory saveHistoryUseCase;
@@ -105,16 +107,16 @@ class MedicineCubit extends Cubit<MedicineState> {
 
       final id = _getNotificationId(time);
 
-      if (names.isEmpty) {
-        futures.add(notificationService.cancelNotification(id));
-      } else {
+      futures.add(notificationService.cancelNotification(id));
+
+      if (names.isNotEmpty) {
         futures.add(
           notificationService.scheduleDailyNotification(
             id: id,
             title: "Medicine Reminder 💊",
             body: "Take: $names",
             hour: _getHour(time),
-            minute: 10,
+            minute: 30,
           ),
         );
       }
@@ -137,9 +139,9 @@ class MedicineCubit extends Cubit<MedicineState> {
 
   int _getHour(MedicineTime time) {
     return switch (time) {
-      MedicineTime.morning => 10,
-      MedicineTime.noon => 16,
-      MedicineTime.night => 22,
+      MedicineTime.morning => 8,
+      MedicineTime.noon => 12,
+      MedicineTime.night => 4,
     };
   }
 
