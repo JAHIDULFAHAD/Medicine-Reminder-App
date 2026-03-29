@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medicine_reminder_app/core/services/notification_service.dart';
 import '../../domain/entities/history.dart';
 import '../../domain/entities/medicine.dart';
 import '../../domain/entities/medicine_time.dart';

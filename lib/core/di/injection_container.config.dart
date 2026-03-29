@@ -11,6 +11,7 @@
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:hive/hive.dart' as _i979;
 import 'package:injectable/injectable.dart' as _i526;
+import 'package:medicine_reminder_app/core/di/hive_module.dart' as _i550;
 import 'package:medicine_reminder_app/core/services/notification_service.dart'
     as _i716;
 import 'package:medicine_reminder_app/features/medicine/data/datasources/hive_datasource.dart'
@@ -47,8 +48,19 @@ extension GetItInjectableX on _i174.GetIt {
       environment,
       environmentFilter,
     );
+    final hiveModule = _$HiveModule();
+    gh.lazySingleton<_i979.Box<_i987.MedicineModel>>(
+        () => hiveModule.medicineBox);
+    gh.lazySingleton<_i979.Box<_i471.HistoryModel>>(
+        () => hiveModule.historyBox);
     gh.lazySingleton<_i716.NotificationService>(
         () => _i716.NotificationService());
+    gh.lazySingleton<_i304.HiveDataSource>(() => _i304.HiveDataSource(
+          medicineBox: gh<_i979.Box<_i987.MedicineModel>>(),
+          historyBox: gh<_i979.Box<_i471.HistoryModel>>(),
+        ));
+    gh.factory<_i330.MedicineRepository>(
+        () => _i395.MedicineRepositoryImpl(gh<_i304.HiveDataSource>()));
     gh.factory<_i353.AddMedicine>(
         () => _i353.AddMedicine(gh<_i330.MedicineRepository>()));
     gh.factory<_i996.GetHistory>(
@@ -59,10 +71,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i799.GetTodayMedicineStatus(gh<_i330.MedicineRepository>()));
     gh.factory<_i376.SaveHistory>(
         () => _i376.SaveHistory(gh<_i330.MedicineRepository>()));
-    gh.lazySingleton<_i304.HiveDataSource>(() => _i304.HiveDataSource(
-          medicineBox: gh<_i979.Box<_i987.MedicineModel>>(),
-          historyBox: gh<_i979.Box<_i471.HistoryModel>>(),
-        ));
     gh.factory<_i586.MedicineCubit>(() => _i586.MedicineCubit(
           addMedicineUseCase: gh<_i353.AddMedicine>(),
           saveHistoryUseCase: gh<_i376.SaveHistory>(),
@@ -71,8 +79,8 @@ extension GetItInjectableX on _i174.GetIt {
           getHistoryUseCase: gh<_i996.GetHistory>(),
           notificationService: gh<_i716.NotificationService>(),
         ));
-    gh.lazySingleton<_i395.MedicineRepositoryImpl>(
-        () => _i395.MedicineRepositoryImpl(gh<_i304.HiveDataSource>()));
     return this;
   }
 }
+
+class _$HiveModule extends _i550.HiveModule {}
